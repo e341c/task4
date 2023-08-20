@@ -3,8 +3,8 @@ import { Button, Form, Col, InputGroup } from "react-bootstrap";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
-import axios from "./api/axios";
-import config from "./config/axiosConfig";
+import axios from "../api/axios";
+import config from "../config/axiosConfig";
 
 function Login() {
     const router = useRouter();

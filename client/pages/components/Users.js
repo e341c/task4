@@ -3,8 +3,8 @@ import Table from "react-bootstrap/Table";
 import { Button } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
-import axios from "../api/axios";
-import config from "../config/axiosConfig";
+import axios from "../../api/axios";
+import config from "../../config/axiosConfig";
 
 function Users() {
     const [auth, setAuth] = useState(false)

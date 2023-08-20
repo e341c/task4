@@ -3,7 +3,8 @@ import { Button, Form } from "react-bootstrap";
 import { useState } from "react";
 import { format } from "date-fns";
 import { useRouter } from "next/router";
-import axios from "axios";
+import axios from "../api/axios";
+import config from "../config/axiosConfig";
 
 function Register() {
     const router = useRouter();
@@ -44,7 +45,7 @@ function Register() {
                         if (user.password === user.passwordMatch) {
                             serPasswordMatch(false);
                             await axios
-                                .post("http://localhost:3001/api/signup", user)
+                                .post("/api/signup", user, config)
                                 .then((responce) => {
                                     console.log(
                                         "Axios responce",
