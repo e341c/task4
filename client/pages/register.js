@@ -74,7 +74,6 @@ function Register() {
             } else {
                 setExistsEmail(false);
             }
-            console.log("ERROR FROM FORM", err);
         }
     };
 

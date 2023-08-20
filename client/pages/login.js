@@ -34,18 +34,14 @@ function Login() {
             try {
                 await axios.post("/api/signin/", user, config).then((responce) => {
                     if (responce.status === 200) {
-                        console.log(responce);
                         router.push("/");
                     }
                 });
             } catch (err) {
-                console.log(err);
-                console.log(err.response.status);
-                if (err.response.status === 500) {
-                    setEmailNotFound(true);
+                if (err.response.status === 408) {
+                    setIncorrectPassword(true);
                 }
-                if (err.response.status == 401) {
-                    // setIncorrectPassword(true);
+                if (err.response.status == 409) {
                     setEmailNotFound(true);
                 }
             }

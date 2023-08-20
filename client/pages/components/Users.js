@@ -110,7 +110,7 @@ function Users() {
                         className="me-3"
                         onClick={() => handleBlock(selectedItems)}
                     >
-                        <strong>Block</strong>
+                        <strong style={{color: "rgba(1,1,1,0.7)"}}>Block</strong>
                     </Button>
                     <Button variant="success" className="me-3">
                         <img
@@ -148,8 +148,8 @@ function Users() {
                             <th>ID</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Registration time</th>
-                            <th>Last login time</th>
+                            <th>Registration time UTC</th>
+                            <th>Last login time UTC</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -171,8 +171,8 @@ function Users() {
                                 <td>{user._id}</td>
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
-                                <td>{user.createdAt}</td>
-                                <td>{user.updatedAt}</td>
+                                <td>{user.createdAt.replace(/\.\d+/, "")}</td>
+                                <td>{user.updatedAt.replace(/\.\d+/, "")}</td>
                                 <td>
                                     {user.status ? (
                                         <p>Active</p>
