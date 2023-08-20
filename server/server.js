@@ -13,7 +13,7 @@ app.use(cookieParser())
 
 app.use(
     cors({
-        origin: "http://localhost:3000",
+        origin: "https://task4-client-aedr.onrender.com",
         credentials: true,
     })
 );
