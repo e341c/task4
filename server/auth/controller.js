@@ -1,5 +1,6 @@
 const User = require("./User");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const signUp = async (req, res) => {
     if (
@@ -35,11 +36,42 @@ const signUp = async (req, res) => {
 };
 
 const signIn = async (req, res) => {
-    const token = req.user.token;
-    res.cookie("access_token", token, {
-        sameSite: 'none',
-        secure: true,
-    }).status(200).json(req.user);
+    if (req.body.email.length >= 1 && req.body.password.length >= 1) {
+        const user = await User.findOne({ email: req.body.email });
+        if (!user) {
+            res.status(409).send("Email does not exists");
+        }
+        if (user) {
+            bcrypt.compare(req.body.password, user.password, function (err, result) {
+                    if (err) {
+                        res.status(500).send({ error: "Internal server error." });
+                    }
+                    if (result) {
+                        const token = jwt.sign(
+                            {
+                                user_id: user._id,
+                                email: user.email,
+                                status: user.status,
+                                createdAt: user.createdAt,
+                                updatedAt: user.updatedAt,
+                            },
+                            process.env.TOKEN_KEY,
+                            {
+                                expiresIn: "1h",
+                            }
+                        );
+                        user.token = token;
+                        return res.cookie("access_token", token, {
+                            sameSite: "none",
+                            secure: true,
+                        }).status(200).json(user);
+                    } else res.status(408).send("Incorrect password")
+                }
+            );
+        }
+    } else {
+        res.status(400).send("All inputs are required");
+    }
 };
 
 const signOut = async (req, res) => {
