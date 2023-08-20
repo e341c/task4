@@ -3,10 +3,12 @@ import Table from "react-bootstrap/Table";
 import { Button } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
-import axios from "axios";
+import axios from "../api/axios";
+import config from "../config/axiosConfig";
 
 function Users() {
-    const [email, setEmail] = useState('')
+    const [auth, setAuth] = useState(false)
+    const [userAuth, setUserAuth] = useState([])
     const [users, setUsers] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
 
@@ -40,7 +42,7 @@ function Users() {
     const handleDelete = async (idArr) => {
         try {
             idArr.map(async (id) => {
-                await axios.delete("http://localhost:3001/api/delete/" + id)
+                await axios.delete("/users/delete/" + id, config)
             });
             window.location.reload();
         } catch (err) {
@@ -49,9 +51,12 @@ function Users() {
     };
 
     const handleUnblock = async (idArr) => {
+        
         try {
             idArr.map(async (id) => {
-                await axios.post("http://localhost:3001/api/unblock/" + id);
+                await axios.post("/users/unblock/" + id, config).then(response => {
+                    console.log(response);
+                })
             });
             window.location.reload();
         } catch (err) {
@@ -62,7 +67,7 @@ function Users() {
     const handleBlock = async (idArr) => {
         try {           
             idArr.map(async (id) => {
-                await axios.post("http://localhost:3001/api/block/" + id)
+                await axios.post("/users/block/" + id, config)
             });
             window.location.reload();
         } catch (err) {
@@ -73,32 +78,33 @@ function Users() {
     useEffect(() => {
         const fetchAllUsers = async () => {
             try {
-                const res = await axios.get("http://localhost:3001/users")
+                const res = await axios.get("/users", config)
                 setUsers(res.data);
             } catch (err) {
                 console.log(err);
             }
         };
-        fetchAllUsers();
-        const userLoging = async () => {
+        const userLogin = async () => {
             try {
-                const res = await axios.get("http://localhost:3001/getUser")
-                console.log(res);
+                const res = await axios.get("/getuser", config)
+                setUserAuth(res.data)
+                setAuth(res.data.status)
             } catch (err) {
                 console.log(err);
             }
         };
-        userLoging();
+        userLogin();
+        fetchAllUsers();
     }, []);
 
     return (
         <div className="p-5">
-            <div className="shadow-sm">
-                <div>
-                    <p>Selected items: {selectedItems.toString()}</p> 
-                    <p>You logged in as: {}</p>
-                </div>
+            {auth && <div className="shadow-sm">
                 <div className="p-3" style={{ background: "rgba(0,0,0,.1)" }}>
+                    <div className="d-flex justify-content-between">
+                        <p>Selected items: {selectedItems.toString()}</p> 
+                        <p>You logged in as: {userAuth.email}</p>
+                    </div>
                     <Button
                         variant="warning"
                         className="me-3"
@@ -137,12 +143,7 @@ function Users() {
                     <thead>
                         <tr>
                             <th>
-                                <input
-                                    type="checkbox"
-                                    name=""
-                                    id=""
-                                    onChange={handleCheckAll}
-                                />
+                                <input type="checkbox" onChange={handleCheckAll}/>
                             </th>
                             <th>ID</th>
                             <th>Name</th>
@@ -183,7 +184,10 @@ function Users() {
                         ))}
                     </tbody>
                 </Table>
-            </div>
+            </div>}
+            {!auth && <div className="d-flex justify-content-center">
+                <h2>To see table of users you need to <a href="/login">login</a> or <a href="/register">register</a></h2>
+            </div> }
         </div>
     );
 }

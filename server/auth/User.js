@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
     createdAt: Date,
     updatedAt: Date,
     status: Boolean,
+    token: String
 })
 
 module.exports = mongoose.model('user', UserSchema)

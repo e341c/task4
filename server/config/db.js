@@ -1,7 +1,13 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-mongoose.connect('mongodb://localhost:27017/task4').then(() => {
-    console.log('Connected to MongoDB');
-}).catch((e) => {
-    console.log('Failed to connect to MongoDB');
-})
+const { MONGO_URI } = process.env;
+
+mongoose
+    .connect(MONGO_URI)
+    .then(() => {
+        console.log("Successfully connected to database");
+    })
+    .catch((error) => {
+        console.log("database connection failed");
+        console.error(error);
+    });

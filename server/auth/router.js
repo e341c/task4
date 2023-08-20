@@ -1,13 +1,10 @@
 const express = require('express')
 const passport = require('passport')
-const app = express()
-const {signUp, signIn, signOut, block, unblock, deleteUser} = require('./controller')
+const router = express.Router()
+const { signUp, signIn, signOut } = require('./controller')
 
-app.post('/api/signup', signUp)
-app.post('/api/signin', passport.authenticate('local', {failureRedirect : false,failureMessage: true }), signIn)
-app.get('/api/signout', signOut)
-app.post('/api/block/:id', block)
-app.post('/api/unblock/:id', unblock)
-app.delete('/api/delete/:id', deleteUser)
+router.post('/api/signup', signUp)
+router.post('/api/signin', passport.authenticate('local', {failureRedirect : false,failureMessage: true }), signIn)
+router.get('/api/signout', signOut)
 
-module.exports = app
+module.exports = router

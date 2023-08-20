@@ -1,5 +1,5 @@
 import Head from "next/head";
-import Users from "./Users";
+import Users from "./components/Users";
 
 export default function Home() {
     return (

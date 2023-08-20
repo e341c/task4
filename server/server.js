@@ -5,6 +5,7 @@ const passport = require('passport')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
+require("dotenv").config();
 
 const app = express()
 
@@ -20,6 +21,7 @@ app.use(session({
         mongoUrl: 'mongodb://localhost:27017'
     })
 }))
+app.use(cookieParser())
 
 app.use(
     cors({
@@ -31,16 +33,14 @@ app.use(
 require('./config/db.js')
 require('./config/passport.js')
 
-
-
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.use(require('./pages/router.js'))
+app.use(require('./routes/router.js'))
 app.use(require('./auth/router.js'))
 
-const PORT = 3001
+const { API_PORT } = process.env;
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+app.listen(API_PORT, () => {
+    console.log(`Server listening on port ${API_PORT}`);
 })

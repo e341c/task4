@@ -14,7 +14,7 @@ function Register() {
     const [passwordMath, serPasswordMatch] = useState(false);
     const [incorrectEmail, setIncorrectEmail] = useState(false);
     const [existsEmail, setExistsEmail] = useState(false);
-    const [err, setErr] = useState(false);
+    const [allInputs, setAllInputs] = useState(false);
     const [user, setUser] = useState({
         name: "",
         email: "",
@@ -35,30 +35,26 @@ function Register() {
     const handleClick = async (event) => {
         event.preventDefault();
         try {
-            if (user.name.length > 2) {
+            if (user.name.length >= 1) {
                 setShortName(false);
                 if (user.password.length >= 1) {
                     setShortPassword(false);
                     if (user.email.indexOf("@") !== -1) {
                         setIncorrectEmail(false);
-                        if (user.password == user.passwordMatch) {
+                        if (user.password === user.passwordMatch) {
                             serPasswordMatch(false);
                             await axios
                                 .post("http://localhost:3001/api/signup", user)
                                 .then((responce) => {
-                                    console.log("Axios responce", responce);
-                                    if (
-                                        responce.data.message == "User successfully created"
-                                    ) {
+                                    console.log(
+                                        "Axios responce",
+                                        responce.status
+                                    );
+                                    if (responce.status === 201) {
                                         router.push("/login");
-                                    } else if (
-                                        responce.data.message ==
-                                        "User already exists"
-                                    ) {
-                                        setExistsEmail(true);
                                     }
                                 });
-                            setErr(false);
+                            setAllInputs(false);
                         } else {
                             serPasswordMatch(true);
                         }
@@ -70,10 +66,15 @@ function Register() {
                 }
             } else {
                 setShortName(true);
-                setErr(true);
+                setAllInputs(true);
             }
         } catch (err) {
-            console.log(err);
+            if (err.status == 409) {
+                setExistsEmail(true);
+            } else {
+                setExistsEmail(false);
+            }
+            console.log("ERROR FROM FORM", err);
         }
     };
 
@@ -82,8 +83,7 @@ function Register() {
             className="d-flex justify-content-center align-items-center"
             style={{ height: "100vh", background: "rgba(0,0,0,.1)" }}
         >
-            <Form
-                className="p-5 d-flex flex-column align-items-center"
+            <div
                 style={{
                     width: "600px",
                     marginTop: "-3rem",
@@ -91,76 +91,94 @@ function Register() {
                     borderRadius: "10px",
                 }}
             >
-                <h2 className="mb-4">Register</h2>
-                <Form.Group className="mb-3 w-100" controlId="formBasicEmail">
-                    <Form.Label>Your name</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Enter your name"
-                        onChange={handleChange}
-                        name="name"
-                    />
-                    {shortName && (
-                        <p style={{ color: "red" }}>Name is too short</p>
-                    )}
-                </Form.Group>
-                <Form.Group className="mb-3 w-100" controlId="formBasicEmail">
-                    <Form.Label>Email address</Form.Label>
-                    <Form.Control
-                        type="email"
-                        placeholder="Enter your email"
-                        onChange={handleChange}
-                        name="email"
-                    />
-                    {incorrectEmail && (
-                        <p style={{ color: "red" }}>Incorrect Email</p>
-                    )}
-                    {existsEmail && (
-                        <p style={{ color: "red" }}>
-                            User with that Email already exists
-                        </p>
-                    )}
-                </Form.Group>
-                <Form.Group
-                    className="mb-3 w-100"
-                    controlId="formBasicPassword"
-                >
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                        type="password"
-                        placeholder="Enter your password"
-                        onChange={handleChange}
-                        name="password"
-                    />
-                    {shortPassword && (
-                        <p style={{ color: "red" }}>Password is too short</p>
-                    )}
-                </Form.Group>
-                <Form.Group
-                    className="mb-3 w-100"
-                    controlId="formBasicPassword"
-                >
-                    <Form.Label>Repeat your password</Form.Label>
-                    <Form.Control
-                        type="password"
-                        placeholder="Repeat your password"
-                        onChange={handleChange}
-                        name="passwordMatch"
-                    />
+                <Form className="p-5 d-flex flex-column align-items-center">
+                    <h2 className="mb-4">Register</h2>
+                    <Form.Group
+                        className="mb-3 w-100"
+                        controlId="formBasicEmail"
+                    >
+                        <Form.Label>Your name</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Enter your name"
+                            onChange={handleChange}
+                            name="name"
+                        />
+                        {shortName && (
+                            <p style={{ color: "red" }}>Name is too short</p>
+                        )}
+                    </Form.Group>
+                    <Form.Group
+                        className="mb-3 w-100"
+                        controlId="formBasicEmail"
+                    >
+                        <Form.Label>Email address</Form.Label>
+                        <Form.Control
+                            type="email"
+                            placeholder="Enter your email"
+                            onChange={handleChange}
+                            name="email"
+                        />
+                        {incorrectEmail && (
+                            <p style={{ color: "red" }}>Incorrect Email</p>
+                        )}
+                        {existsEmail && (
+                            <p style={{ color: "red" }}>
+                                User with that Email already exists
+                            </p>
+                        )}
+                    </Form.Group>
+                    <Form.Group
+                        className="mb-3 w-100"
+                        controlId="formBasicPassword"
+                    >
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
+                            type="password"
+                            placeholder="Enter your password"
+                            onChange={handleChange}
+                            name="password"
+                        />
+                        {shortPassword && (
+                            <p style={{ color: "red" }}>
+                                Password is too short
+                            </p>
+                        )}
+                    </Form.Group>
+                    <Form.Group
+                        className="mb-3 w-100"
+                        controlId="formBasicPassword"
+                    >
+                        <Form.Label>Repeat your password</Form.Label>
+                        <Form.Control
+                            type="password"
+                            placeholder="Repeat your password"
+                            onChange={handleChange}
+                            name="passwordMatch"
+                        />
 
-                    {passwordMath && (
-                        <p style={{ color: "red" }}>Passwords do not match</p>
-                    )}
-                </Form.Group>
-                {err && <p style={{ color: "red" }}>Fill in the fields</p>}
-                <Button
-                    className="w-100 mt-3"
-                    variant="primary"
-                    onClick={handleClick}
-                >
-                    Register
-                </Button>
-            </Form>
+                        {passwordMath && (
+                            <p style={{ color: "red" }}>
+                                Passwords do not match
+                            </p>
+                        )}
+                    </Form.Group>
+                    {allInputs && <p style={{ color: "red" }}>All inputs are required</p>}
+                    <Button
+                        className="w-100 mt-3"
+                        variant="primary"
+                        onClick={handleClick}
+                    >
+                        Register
+                    </Button>
+                </Form>
+                <div className="d-flex justify-content-center mb-4">
+                    <p>
+                        Already have an account?{" "}
+                        <a href="/login">Login now</a>
+                    </p>
+                </div>
+            </div>
         </div>
     );
 }
